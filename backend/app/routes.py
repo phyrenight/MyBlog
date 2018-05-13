@@ -1,46 +1,44 @@
-from app import app
-from app import db
-from app.models import User, Post, Comment
+#from flask import flash, redirect, render_template
+from app import app , db
+#from app.models import User, Post, Comment
 
 
 @app.route('/')
 @app.route('/home')
 def home():
-    return render_template('home.html')
+    return 'home'
 
 
 @app.route('/signin', methods=['GET', 'POST'])
 def sign_in():
-    return render_template('signin.html')
+    return 'signin'
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    return render_template('register.html')
+    return 'register'
 
 
 @app.route('/posts')
 def get_all_post():
-    return render_template('get_all_post.html')
+    return 'get_all_post'
 
 
 @app.route('/posts/<post_id>', methods=['GET', 'POST'])
 def get_a_post(post_id):
-    return render_template('a_post.html')
+    return 'a_post'
 
 
 @app.route('/posts/<user_id>/<post_id>/delete', methods=['GET', 'POST'])
 def delete_a_post(user_id, post_id):
-    return render_template('delete_post.html')
+    return 'delete_post'
 
 
 @app.route('/posts/<user_id>/createpost', methods=['GET', 'POST'])
 def create_a_post(user_id):
-    return render_template('create_post.html')
+    return 'create_post'
 
 
 @app.route('/posts/<user_id>/<post_id>/editpost', methods=['GET', 'POST'])
 def edit_a_post(user_id, post_id):
-    return render_template('edit_post.html')
-
-
+    return 'edit_post'
