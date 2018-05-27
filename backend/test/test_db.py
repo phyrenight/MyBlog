@@ -52,7 +52,22 @@ class TestQuery(unittest.TestCase):
 
 
     def test_comment(self):
-        pass
+        user = User('b@b.com', 'bbbbbbbb', 'b', True)
+        db.session.add(user)
+        db.session.commit()
+        post = Post(user.id, 'aaaaaaa', 'a')
+        db.session.add(post)
+        db.session.commit()
+        comment = Comment(user.id, post.id, 'comment')
+        db.session.add(comment)
+        db.session.commit()
+        comment_query = db.session.query(Comment).filter_by(comment='comment').first()
+        self.assertIsNotNone(comment_query.id)
+        self.assertEqual(comment_query.author_id, user.id)
+        self.assertEqual(comment_query.post_id, post.id)
+        self.assertEqual(comment_query.comment, 'comment')
+        self.assertFalse(comment_query.isDelete)
+        self.assertIsNotNone(comment_query.date_time)
 
 if __name__ == '__main__':
     unittest.main()
