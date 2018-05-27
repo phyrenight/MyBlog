@@ -3,7 +3,6 @@ import sys
 import unittest
 #from config import basedir
 sys.path.append('/home/phyrenight/programming/MyBlog/backend/')
-print(sys.path)
 from app import app
 from app import db
 from app.models import User
@@ -24,9 +23,49 @@ class TestCase(unittest.TestCase):
         db.drop_all()
 
 
-    def test_home_page(self):
+    def test_home(self):
         response  = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
+
+
+    def test_sign_in(self):
+        pass
+
+
+    def test_register(self):
+        pass
+
+
+    def test_get_all_post(self):
+        pass
+
+
+    def test_get_post(self):
+        pass
+
+
+    def  test_delete_post(self):
+        pass
+
+
+    def test_create_post(self):
+        pass
+
+
+    def test_edit_post(self):
+        pass
+
+
+    def test_create_comment(self):
+        pass
+
+
+    def test_edit_comment(self):
+        pass
+
+
+    def test_delete_comment(self):
+        pass
 
 
 if __name__ == '__main__':

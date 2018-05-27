@@ -1,5 +1,6 @@
 from datetime import datetime
 from app import db
+from passlib.hash import sha256_crypt
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -13,9 +14,18 @@ class User(db.Model):
 
     def __init__(self, email, password, username, blogger):
         self.email = email
-        self.password = password
+        self.hash_password(password)
         self.username = username
         self.blogger = blogger
+
+
+    def hash_password(self, password):
+        self.password = sha256_crypt.encrypt(password)
+
+
+    def verify_password(self, password):
+        return sha256_crypt.verify(password, self.password)
+
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,6 +41,7 @@ class Post(db.Model):
         self.user_id = user_id
         self.post = post
         self.title = title
+
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -6,6 +6,7 @@ from app import app , db
 @app.route('/')
 @app.route('/home')
 def home():
+    print app.config['SQLALCHEMY_DATABASE_URI']
     return 'home'
 
 
