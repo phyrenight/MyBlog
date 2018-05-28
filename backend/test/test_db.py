@@ -34,10 +34,14 @@ class TestQuery(unittest.TestCase):
         self.assertNotEqual(user.password, 'bbbbbbbb')
 
 
-    def test_post(self):
-        user = User('b@b.com', 'bbbbbbbb', 'b', True)
+    def login(self, email, password, username, isBlogger):
+        user = User(email, password, username, isBlogger)
         db.session.add(user)
         db.session.commit()
+        return user
+
+    def test_post(self):
+        user = self.login('b@b.com', 'bbbbbbbb', 'b', True)
         post = Post(user.id, 'aaaaaaa', 'a')
         db.session.add(post)
         db.session.commit()
@@ -52,9 +56,7 @@ class TestQuery(unittest.TestCase):
 
 
     def test_comment(self):
-        user = User('b@b.com', 'bbbbbbbb', 'b', True)
-        db.session.add(user)
-        db.session.commit()
+        user = self.login('b@b.com', 'bbbbbbbb', 'b', True)
         post = Post(user.id, 'aaaaaaa', 'a')
         db.session.add(post)
         db.session.commit()

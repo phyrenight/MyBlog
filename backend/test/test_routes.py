@@ -7,6 +7,8 @@ from app import app
 from app import db
 from app.models import User
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 
 class TestCase(unittest.TestCase):
 
@@ -29,7 +31,11 @@ class TestCase(unittest.TestCase):
 
 
     def test_sign_in(self):
-        pass
+        return self.app.post('/signin', data=dict(
+            email='b@b.com',
+            password='bbbbbbbb'
+            ), follow_redirects=True)
+        
 
 
     def test_register(self):
