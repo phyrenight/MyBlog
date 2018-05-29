@@ -28,7 +28,7 @@ class TestQuery(unittest.TestCase):
         db.session.add(user)
         db.session.commit()
         user_query = db.session.query(User).filter_by(email='b@b.com').first()
-        self.assertIsNotNone(user.id)
+        self.assertIsNotNone(user._id)
         self.assertEqual(user.username, 'b')
         self.assertFalse(user.blogger)
         self.assertNotEqual(user.password, 'bbbbbbbb')
@@ -40,33 +40,38 @@ class TestQuery(unittest.TestCase):
         db.session.commit()
         return user
 
+
+    def add_post(self, user, post, title):
+        post = Post(user._id, post, title)
+
+
     def test_post(self):
         user = self.login('b@b.com', 'bbbbbbbb', 'b', True)
-        post = Post(user.id, 'aaaaaaa', 'a')
+        post = Post(user._id, 'aaaaaaa', 'a')
         db.session.add(post)
         db.session.commit()
-        post_query = db.session.query(Post).filter_by(id=user.id).first()
-        self.assertEqual(post.user_id, user.id)
+        post_query = db.session.query(Post).filter_by(_id=user._id).first()
+        self.assertEqual(post.user_id, user._id)
         self.assertEqual(post.title, 'a')
         self.assertEqual(post.post, 'aaaaaaa')
         self.assertIsNotNone(post.date_time)
         self.assertFalse(post.isDelete)
-        self.assertIsNotNone(post.id)
+        self.assertIsNotNone(post._id)
 
 
 
     def test_comment(self):
         user = self.login('b@b.com', 'bbbbbbbb', 'b', True)
-        post = Post(user.id, 'aaaaaaa', 'a')
+        post = Post(user._id, 'aaaaaaa', 'a')
         db.session.add(post)
         db.session.commit()
-        comment = Comment(user.id, post.id, 'comment')
+        comment = Comment(user._id, post._id, 'comment')
         db.session.add(comment)
         db.session.commit()
         comment_query = db.session.query(Comment).filter_by(comment='comment').first()
-        self.assertIsNotNone(comment_query.id)
-        self.assertEqual(comment_query.author_id, user.id)
-        self.assertEqual(comment_query.post_id, post.id)
+        self.assertIsNotNone(comment_query._id)
+        self.assertEqual(comment_query.author_id, user._id)
+        self.assertEqual(comment_query.post_id, post._id)
         self.assertEqual(comment_query.comment, 'comment')
         self.assertFalse(comment_query.isDelete)
         self.assertIsNotNone(comment_query.date_time)
