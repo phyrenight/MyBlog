@@ -6,7 +6,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), index=True, nullable=False)
     password = db.Column(db.String(300), nullable=False)
-    username = db.Column(db.String(100), index=True, nullabel=False)
+    username = db.Column(db.String(100), index=True, nullable=False)
     blogger = db.Column(db.Boolean, unique=False, default=False)  # think about changing to isBlogger
     post = db.relationship('Post', backref='author_id', lazy='dynamic')
     comment = db.relationship('Comment', backref='user_id', lazy='dynamic')

@@ -30,12 +30,31 @@ class TestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-    def test_sign_in(self):
+    def login(self, email, password):
         return self.app.post('/signin', data=dict(
-            email='b@b.com',
-            password='bbbbbbbb'
+            email=email,
+            password=password
             ), follow_redirects=True)
         
+    
+    def logout(self):
+        return self.app.get('/signout', follow_redirects=True)
+
+
+    def test_sign_in(self):
+        result = self.login('b@b.com', 'bbbbbbbb')
+        assert b'You are logged in' in result.data
+        result = self.logout()
+        assert b'You are logged out' in result.data
+        # incorrect email
+        result = self.login('b@b.comg', 'bbbbbbbb')
+        assert b'Invalid email'
+        result = self.logout()
+        # incorrect password
+        result = self.login('b@b.com', 'aaaaaaaa')
+        assert b'Invalid password'
+        result = self.logout()
+
 
 
     def test_register(self):
@@ -43,7 +62,8 @@ class TestCase(unittest.TestCase):
 
 
     def test_get_all_post(self):
-        pass
+        result = self.app.get('/posts', follow_redirects=True)
+        self.assertEqual(result.status_code, 200)
 
 
     def test_get_post(self):
