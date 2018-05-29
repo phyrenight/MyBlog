@@ -3,7 +3,7 @@ from app import db
 from passlib.hash import sha256_crypt
 
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    _id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(100), index=True, nullable=False)
     password = db.Column(db.String(300), nullable=False)
     username = db.Column(db.String(100), index=True, nullable=False)
@@ -12,7 +12,7 @@ class User(db.Model):
     comment = db.relationship('Comment', backref='user_id', lazy='dynamic')
 
 
-    def __init__(self, email, password, username, blogger):
+    def __init__(self, email, password, username, blogger=False):
         self.email = email
         self.hash_password(password)
         self.username = username
@@ -28,8 +28,8 @@ class User(db.Model):
 
 
 class Post(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    _id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user._id'), nullable=False)
     post = db.Column(db.String, nullable=False)
     title = db.Column(db.String, nullable=False)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
@@ -44,9 +44,9 @@ class Post(db.Model):
 
 
 class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    _id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user._id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post._id'), nullable=False)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
     comment = db.Column(db.String, nullable=False)
     isDelete = db.Column(db.Boolean, default=False)
