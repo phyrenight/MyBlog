@@ -4,9 +4,9 @@ from passlib.hash import sha256_crypt
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), index=True)
-    password = db.Column(db.String(300))
-    username = db.Column(db.String(100), index=True)
+    email = db.Column(db.String(100), index=True, nullable=False)
+    password = db.Column(db.String(300), nullable=False)
+    username = db.Column(db.String(100), index=True, nullabel=False)
     blogger = db.Column(db.Boolean, unique=False, default=False)  # think about changing to isBlogger
     post = db.relationship('Post', backref='author_id', lazy='dynamic')
     comment = db.relationship('Comment', backref='user_id', lazy='dynamic')
@@ -29,11 +29,11 @@ class User(db.Model):
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    post = db.Column(db.String)
-    title = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post = db.Column(db.String, nullable=False)
+    title = db.Column(db.String, nullable=False)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
-    isDelete = db.Column(db.Boolean)
+    isDelete = db.Column(db.Boolean, default=False)
     Comment = db.relationship('Comment', backref='id_post', lazy='dynamic')
 
 
@@ -45,11 +45,11 @@ class Post(db.Model):
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
-    comment = db.Column(db.String)
-    isDelete = db.Column(db.Boolean)
+    comment = db.Column(db.String, nullable=False)
+    isDelete = db.Column(db.Boolean, default=False)
 
 
     def __init__(self, author_id, post_id, comment):
