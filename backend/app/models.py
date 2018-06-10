@@ -2,11 +2,11 @@ from datetime import datetime
 from app import db
 from passlib.hash import sha256_crypt
 
-class User(db.Model):
+class Users(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), index=True, nullable=False)
+    email = db.Column(db.String(100), index=True, nullable=False, unique=True)
     password = db.Column(db.String(300), nullable=False)
-    username = db.Column(db.String(100), index=True, nullable=False)
+    username = db.Column(db.String(100), index=True, nullable=False, unique=True)
     blogger = db.Column(db.Boolean, unique=False, default=False)  # think about changing to isBlogger
     post = db.relationship('Post', backref='author_id', lazy='dynamic')
     comment = db.relationship('Comment', backref='user_id', lazy='dynamic')
@@ -27,11 +27,11 @@ class User(db.Model):
         return sha256_crypt.verify(password, self.password)
 
 
-class Post(db.Model):
+class Posts(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user._id'), nullable=False)
-    post = db.Column(db.String, nullable=False)
-    title = db.Column(db.String, nullable=False)
+    post = db.Column(db.String, nullable=False, unique=True)
+    title = db.Column(db.String, nullable=False, unique=True)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
     isDelete = db.Column(db.Boolean, default=False)
     Comment = db.relationship('Comment', backref='id_post', lazy='dynamic')
@@ -43,12 +43,12 @@ class Post(db.Model):
         self.title = title
 
 
-class Comment(db.Model):
+class Comments(db.Model):
     _id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user._id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post._id'), nullable=False)
     date_time = db.Column(db.DateTime, default=datetime.utcnow)
-    comment = db.Column(db.String, nullable=False)
+    comment = db.Column(db.String, nullable=False, unique=True)
     isDelete = db.Column(db.Boolean, default=False)
 
 
