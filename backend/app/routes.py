@@ -1,59 +1,81 @@
 #from flask import flash, redirect, render_template
-from app import app , db
-from app.models import User, Post, Comment
-"""
+from app import app , db, jsonify, request
+from app.models import Users, Posts, Comments
+
 db.create_all()
-"""
+
 @app.route('/')
 @app.route('/home')
 def home():
     print app.config['SQLALCHEMY_DATABASE_URI']
-    
-    user = User('c@a.com', 'aaaaaaaa', 'a', False)
+    """
+    user = Users('c@d.com', 'aaaaaaaa', 'ad', False)
     db.session.add(user)
     db.session.commit()
     print user
-    user = db.session.query(User).filter_by(_id=7).first()
+    """
+    user = db.session.query(Users).filter_by(_id=1).first()
     erroruser = {"_id" : 10000}
     print type(user)
     print user
     print user.email
     print erroruser["_id"]
+    
     return 'home'
 
 
-@app.route('/signin', methods=['GET', 'POST'])
+@app.route('/signin', methods=['POST'])
 def sign_in():
+    request_json = request.json()
+
     return 'signin'
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['POST'])
 def register():
-    return 'register'
+    user_json = request.json()
+    check_email = db.session.query(Users).filter_by(email=user_json.email).first()
+    check_usernme = db.session.query(Users).filter_by(username=user_json.username).first()
+    user = Users()
 
 
 @app.route('/posts')
 def get_all_post():
-    post = db.session.query(Post).all()
+    post = db.session.query(Posts).all()
     print post
-    return 'get_all_post'
+    if post == []:
+        return jsonify({'post': None})
+    else:
+        return jsonify({'post': post})
 
 
-@app.route('/posts/<post_id>', methods=['GET', 'POST'])
+@app.route('/post/<post_id>', methods=['GET'])
 def get_a_post(post_id):
-    return 'a_post'
+    post = db.session.query(Posts).filter_by(_id=post_id).first()
+    if post == []:
+        return jsonify({'post': None})
+    else:
+        return jsonify({'post': post})
 
 
-@app.route('/posts/<post_id>/delete', methods=['GET', 'POST'])
-def delete_a_post(user_id, post_id):
+@app.route('/posts/<post_id>/delete', methods=['DELETE'])
+def delete_a_post(post_id):
     return 'delete_post'
 
 
-@app.route('/posts/createpost', methods=['GET', 'POST'])
-def create_a_post(user_id):
-    return 'create_post'
+@app.route('/post/createpost', methods=['POST'])
+def create_a_post():
+    request_json = request.get_json()
+    post = db.session.query(Posts).filter_by(title=request_json['title']).first()
+    if post:
+        return jsonify({'message': 'Post already exists'})
+    else:
+        db_post = Posts(request_json['title'], request_json['body'], request_json['author'])
+        #db.session.add(db_post)
+        #db.session.commit()
+        return jsonify({'message':'create_post'}),201
 
 
-@app.route('/posts/<user_id>/<post_id>/editpost', methods=['GET', 'POST'])
+@app.route('/posts/<user_id>/<post_id>/editpost', methods=['PUT'])
 def edit_a_post(user_id, post_id):
     return 'edit_post'
