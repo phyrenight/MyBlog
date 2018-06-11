@@ -27,8 +27,8 @@ def home():
 @app.route('/signin', methods=['POST'])
 def sign_in():
     request_json = request.json()
-
-    return 'signin'
+    if request_json["title"] == None:
+        return 'signin'
 
 
 @app.route('/register', methods=['POST'])
@@ -52,29 +52,40 @@ def get_all_post():
 @app.route('/post/<post_id>', methods=['GET'])
 def get_a_post(post_id):
     post = db.session.query(Posts).filter_by(_id=post_id).first()
-    if post == []:
-        return jsonify({'post': None})
+    #post = {'id': 1}
+    if post:
+        print post
+        return jsonify({'post': post}), 200
     else:
-        return jsonify({'post': post})
+        print post
+        return jsonify({'post': None}), 404
 
 
 @app.route('/posts/<post_id>/delete', methods=['DELETE'])
 def delete_a_post(post_id):
+    delete_post = db.session.query(Posts).filter_by(_id=post_id).first()
+    if delete_post:
+        pass
     return 'delete_post'
 
 
 @app.route('/post/createpost', methods=['POST'])
 def create_a_post():
     request_json = request.get_json()
+    if 'title' not in request_json:
+        return jsonify({'message':'Title is not included'})
+    elif 'body' not in request_json:
+        return jsonify({'message': 'no body included'})
+
     post = db.session.query(Posts).filter_by(title=request_json['title']).first()
     if post:
         return jsonify({'message': 'Post already exists'})
     else:
+
         db_post = Posts(request_json['title'], request_json['body'], request_json['author'])
         #db.session.add(db_post)
         #db.session.commit()
         return jsonify({'message':'create_post'}),201
-
 
 @app.route('/posts/<user_id>/<post_id>/editpost', methods=['PUT'])
 def edit_a_post(user_id, post_id):
