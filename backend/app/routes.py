@@ -26,14 +26,32 @@ def home():
 
 @app.route('/signin', methods=['POST'])
 def sign_in():
-    request_json = request.json()
-    if request_json["title"] == None:
-        return 'signin'
+    request_json = request.get_json()
+    if request_json["username"] == "":
+        return jsonify({"message": "Invalid username"}), 400
+    elif request_json["password"] == "":
+        return jsonify({"message": " Invalid password"}), 400
+    user = db.session.query(Users).filter_by(username=request_json["username"]).first()
+    user.verify_password(request_json["password"])
+    if user:
+        if user.verify_password(request_json["password"]):
+            return jsonify({"user": user._id}), 200
+        else:
+            return jsonify({"message":"Invalid password"}), 400
+    else:
+        return jsonify({"message":"user not found"}), 500
 
 
 @app.route('/register', methods=['POST'])
 def register():
-    user_json = request.json()
+    request_json = request.get_json()
+    if request_json["username"] == "":
+        return jsonify({"message": "Please enter a username"}), 400
+    elif request_json["email"] == "":
+        return jsonify({"message": "Please enter an email"}), 400
+    elif request_json["password"] =="":
+        return jsonify({"message": "Please enter a password"}), 400
+
     check_email = db.session.query(Users).filter_by(email=user_json.email).first()
     check_usernme = db.session.query(Users).filter_by(username=user_json.username).first()
     user = Users()
@@ -52,21 +70,27 @@ def get_all_post():
 @app.route('/post/<post_id>', methods=['GET'])
 def get_a_post(post_id):
     post = db.session.query(Posts).filter_by(_id=post_id).first()
-    #post = {'id': 1}
     if post:
-        print post
         return jsonify({'post': post}), 200
     else:
-        print post
         return jsonify({'post': None}), 404
 
 
 @app.route('/posts/<post_id>/delete', methods=['DELETE'])
 def delete_a_post(post_id):
+    request_json = request.get_json()
+    if "user" not in request_json:
+        return jsonify({"message": "Please login"}), 400
     delete_post = db.session.query(Posts).filter_by(_id=post_id).first()
     if delete_post:
-        pass
-    return 'delete_post'
+        if request_json["user"] == delete_post.user_id:
+            delete_post.isDelete = True
+            db.session.commit()
+            return jsonify({"message":"Post has been deleted"}), 200
+        else:
+            return jsonify({"message": "You do not have permission to delete this."}), 400
+    else:
+        return jsonify({"message": "Invalid post id"}), 404
 
 
 @app.route('/post/createpost', methods=['POST'])
